@@ -1,0 +1,10 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import WorksList from '../../../components/WorksList.astro';
+import { t } from '../../../data/i18n';
+const lang = 'zh' as const;
+const tt = t[lang];
+---
+<Layout lang={lang} title={tt.works.title} section="works">
+  <WorksList lang={lang} />
+</Layout>

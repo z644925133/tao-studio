@@ -1,0 +1,42 @@
+---
+import { t, type Lang } from '../data/i18n';
+const { lang, section = 'home' } = Astro.props as { lang: Lang; section?: 'works' | 'about' | 'contact' | 'home' };
+const tt = t[lang];
+const other = lang === 'zh' ? 'en' : 'zh';
+const otherLabel = lang === 'zh' ? 'EN' : '中';
+const currentPath = Astro.url.pathname;
+const switchPath = currentPath.replace(/^\/(zh|en)/, `/${other}`) || `/${other}/`;
+
+// Hide default rules: items not matching the current section are dimmed (opacity 0)
+// until the user hovers over the entire sidebar — mirrors Neri&Hu's behaviour.
+const hideClass = (target: string) => (section === target ? '' : 'hide-default');
+---
+<div class="sidebar-fixed">
+  <!-- two-line brand mark — always visible -->
+  <div class="logos">
+    <a href={`/${lang}/`}>{tt.site.brandZh}</a>
+    <a href={`/${lang}/`}>{tt.site.brandEn}</a>
+  </div>
+
+  <!-- main navigation -->
+  <nav>
+    <ul>
+      <li class={hideClass('works')}>
+        <a href={`/${lang}/works`} aria-current={section === 'works' ? 'page' : undefined}>{tt.nav.works}</a>
+      </li>
+      <li class={hideClass('about')}>
+        <a href={`/${lang}/about`} aria-current={section === 'about' ? 'page' : undefined}>{tt.nav.about}</a>
+      </li>
+      <li class={hideClass('contact')}>
+        <a href={`/${lang}/contact`} aria-current={section === 'contact' ? 'page' : undefined}>{tt.nav.contact}</a>
+      </li>
+      <li class="hide-default"><a href={switchPath}>{otherLabel}</a></li>
+    </ul>
+
+    {section === 'works' && (
+      <ul class="subnav-current">
+        <li><a href={`/${lang}/works`} aria-current="page">{tt.works.selected}</a></li>
+      </ul>
+    )}
+  </nav>
+</div>

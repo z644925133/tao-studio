@@ -1,0 +1,43 @@
+---
+import Nav from '../components/Nav.astro';
+import '../styles/global.css';
+import { t, type Lang } from '../data/i18n';
+
+type Props = { lang: Lang; title?: string; section?: 'works' | 'about' | 'contact' | 'home' };
+const { lang, title, section = 'home' } = Astro.props;
+const tt = t[lang];
+const pageTitle = title ? `${tt.site.name} – ${title}` : tt.site.name;
+---
+<!doctype html>
+<html lang={lang === 'zh' ? 'zh-CN' : 'en'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{pageTitle}</title>
+    <meta name="description" content={tt.about.paragraphs[0]} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={tt.about.paragraphs[0]} />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Noto+Sans+SC:wght@200&display=swap" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <Nav lang={lang} section={section} />
+      </aside>
+      <main class="canvas">
+        <slot />
+      </main>
+    </div>
+
+    <script>
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('in'); });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+    </script>
+  </body>
+</html>

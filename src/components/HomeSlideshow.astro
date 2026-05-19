@@ -1,0 +1,76 @@
+---
+import type { Lang } from '../data/i18n';
+import { projects } from '../data/projects';
+const { lang } = Astro.props as { lang: Lang };
+---
+<!--
+  Restrained 16:9 slideshow, top-right aligned within main canvas,
+  with 30px margin from top and right edges. Width ~70% of canvas.
+  No caption, no counter — image speaks for itself.
+-->
+<section class="home-hero">
+  <div class="home-hero-frame">
+    <div class="crossfade home-crossfade">
+      {projects.map((p, i) => (
+        <a
+          href={`/${lang}/works/${p.slug}`}
+          class:list={[i === 0 ? 'active' : '']}
+          data-slide={i}
+          aria-label={p.venue[lang]}
+        >
+          <img
+            src={`/works/${p.slug}/01.jpg`}
+            alt={p.venue[lang]}
+            loading={i === 0 ? 'eager' : 'lazy'}
+            fetchpriority={i === 0 ? 'high' : 'auto'}
+          />
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .home-hero {
+    height: 100vh;
+    padding: 30px 30px 30px 0;
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+  }
+  .home-hero-frame {
+    width: 70%;
+    aspect-ratio: 16 / 9;
+    max-height: calc(100vh - 60px);
+    overflow: hidden;
+    background: #f5f5f5;
+  }
+  .home-crossfade {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  @media (max-width: 768px) {
+    .home-hero {
+      height: auto;
+      padding: 15px;
+    }
+    .home-hero-frame {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      max-height: none;
+    }
+  }
+</style>
+
+<script is:inline define:vars={{ count: projects.length }}>
+  const slides = document.querySelectorAll('.home-crossfade > a');
+  let idx = 0;
+  setInterval(() => {
+    if (!slides.length) return;
+    slides[idx].classList.remove('active');
+    idx = (idx + 1) % count;
+    slides[idx].classList.add('active');
+  }, 5000);
+</script>

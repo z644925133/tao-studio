@@ -1,0 +1,8 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import HomeSlideshow from '../../components/HomeSlideshow.astro';
+const lang = 'en' as const;
+---
+<Layout lang={lang} section="home">
+  <HomeSlideshow lang={lang} />
+</Layout>

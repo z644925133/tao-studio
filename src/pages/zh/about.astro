@@ -1,0 +1,23 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { t } from '../../data/i18n';
+const lang = 'zh' as const;
+const tt = t[lang];
+---
+<Layout lang={lang} title={tt.about.title} section="about">
+  <section style="padding: 30px; max-width: 760px;">
+    <div style="margin-bottom: 30px;" class="fade-in">{tt.about.title}</div>
+
+    <div class="reveal">
+      {tt.about.paragraphs.map((p) => (
+        <p style="margin-bottom: 20px;">{p}</p>
+      ))}
+    </div>
+
+    <div class="reveal" style="margin-top: 60px;">
+      {tt.about.credits.map((c) => (
+        <div style="margin-bottom: 6px;" class="muted">{c}</div>
+      ))}
+    </div>
+  </section>
+</Layout>
