@@ -5,6 +5,6 @@ import { t } from '../../../data/i18n';
 const lang = 'zh' as const;
 const tt = t[lang];
 ---
-<Layout lang={lang} title={tt.works.title} section="works">
-  <WorksList lang={lang} />
+<Layout lang={lang} title={tt.works.title} section="works" category="selected">
+  <WorksList lang={lang} category="selected" />
 </Layout>

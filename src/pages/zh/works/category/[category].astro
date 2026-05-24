@@ -1,0 +1,19 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import WorksList from '../../../../components/WorksList.astro';
+import { t } from '../../../../data/i18n';
+import { workCategories, type WorkCategorySlug } from '../../../../data/projects';
+
+export function getStaticPaths() {
+  return workCategories
+    .filter((category) => category.slug !== 'selected')
+    .map((category) => ({ params: { category: category.slug }, props: { category } }));
+}
+
+const { category } = Astro.props;
+const lang = 'zh' as const;
+const tt = t[lang];
+---
+<Layout lang={lang} title={category.label[lang]} section="works" category={category.slug as WorkCategorySlug}>
+  <WorksList lang={lang} category={category.slug as WorkCategorySlug} />
+</Layout>

@@ -14,6 +14,24 @@ export type Project = {
   description: { zh: string[]; en: string[] };
 };
 
+export type WorkCategorySlug = 'selected' | 'hospitality' | 'office-retail' | 'civic-cultural';
+
+export const workCategories: {
+  slug: WorkCategorySlug;
+  label: { zh: string; en: string };
+}[] = [
+  { slug: 'selected', label: { zh: '精选', en: 'Selected' } },
+  { slug: 'hospitality', label: { zh: '酒店与餐饮', en: 'Hospitality' } },
+  { slug: 'office-retail', label: { zh: '办公与零售', en: 'Office & Retail' } },
+  { slug: 'civic-cultural', label: { zh: '公共与文化', en: 'Civic & Cultural' } }
+];
+
+export const getProjectCategorySlug = (project: Project): WorkCategorySlug => {
+  if (project.type.en === 'Hospitality') return 'hospitality';
+  if (project.type.en === 'Civic & Cultural') return 'civic-cultural';
+  return 'office-retail';
+};
+
 export const projects: Project[] = [
   {
     slug: 'chengtuo-hotel',

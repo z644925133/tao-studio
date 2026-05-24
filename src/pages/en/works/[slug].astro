@@ -1,93 +1,14 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import { projects } from '../../../data/projects';
-import { t } from '../../../data/i18n';
+import ProjectDetail from '../../../components/ProjectDetail.astro';
 
 export function getStaticPaths() {
   return projects.map((p) => ({ params: { slug: p.slug }, props: { project: p } }));
 }
 const { project } = Astro.props;
 const lang = 'en' as const;
-const tt = t[lang];
-const images = Array.from({ length: project.imageCount }, (_, i) => `/works/${project.slug}/${String(i + 1).padStart(2, '0')}.jpg`);
-const metaRows = [
-  [tt.works.meta.type, project.type[lang]],
-  [tt.works.meta.area, project.meta.area],
-  [tt.works.meta.status, project.meta.status[lang]],
-  [tt.works.meta.completion, project.meta.completion[lang]],
-  [tt.works.meta.duration, project.meta.duration[lang]],
-  [tt.works.meta.location, project.meta.location[lang]]
-];
-const otherProjects = projects.filter((p) => p.slug !== project.slug).slice(0, 2);
 ---
-<Layout lang={lang} title={project.venue[lang]} section="works">
-  <article>
-    <div style="width: 100%; aspect-ratio: 3/2; overflow: hidden; background: #000;">
-      <img src={images[0]} alt={project.venue[lang]} class="fade-in" style="width: 100%; height: 100%; object-fit: cover;" />
-    </div>
-
-    <header style="padding: 30px; max-width: 900px;">
-      <div class="muted" style="margin-bottom: 8px;">{project.type[lang]}</div>
-      <div>
-        <span>{project.poeticTitle[lang]}</span>
-        <span class="muted"> | </span>
-        <span class="muted">{project.venue[lang]}</span>
-      </div>
-    </header>
-
-    <section style="padding: 0 30px; max-width: 640px;">
-      {project.description[lang].map((para) => (
-        <p style="margin-bottom: 20px;" class="reveal">{para}</p>
-      ))}
-    </section>
-
-    <section style="margin-top: 40px;">
-      {images.slice(1).map((src, i) => {
-        const wide = i % 3 === 0;
-        const inner = wide
-          ? 'width: 100%; aspect-ratio: 3/2; overflow: hidden;'
-          : 'width: 100%; max-width: 900px; margin: 0 auto; aspect-ratio: 4/3; overflow: hidden;';
-        const wrap = wide ? 'margin-bottom: 30px;' : 'padding: 0 30px; margin-bottom: 30px;';
-        return (
-          <div style={wrap} class="reveal">
-            <div style={inner + ' background: #f5f5f5;'}>
-              <img src={src} alt={project.venue[lang]} loading="lazy" style="width: 100%; height: 100%; object-fit: cover;" />
-            </div>
-          </div>
-        );
-      })}
-    </section>
-
-    <section style="padding: 30px; max-width: 900px; margin-top: 40px;" class="divider">
-      <div style="padding-top: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
-        {metaRows.map(([label, value]) => (
-          <div>
-            <div class="muted" style="margin-bottom: 4px;">{label}</div>
-            <div>{value}</div>
-          </div>
-        ))}
-      </div>
-    </section>
-
-    <section style="padding: 30px; margin-top: 40px;">
-      <div class="muted" style="margin-bottom: 20px;">{tt.works.relatedTitle}</div>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;">
-        {otherProjects.map((p) => (
-          <a href={`/${lang}/works/${p.slug}`}>
-            <div style="aspect-ratio: 3/2; overflow: hidden; background: #f5f5f5; margin-bottom: 11px;">
-              <img src={`/works/${p.slug}/01.jpg`} alt={p.venue[lang]} loading="lazy" style="width: 100%; height: 100%; object-fit: cover;" />
-            </div>
-            <div>
-              <span>{p.poeticTitle[lang]}</span>
-              <span class="muted"> | </span>
-              <span class="muted">{p.venue[lang]}</span>
-            </div>
-          </a>
-        ))}
-      </div>
-      <div style="margin-top: 40px;">
-        <a href={`/${lang}/works`} class="muted">← {tt.works.back}</a>
-      </div>
-    </section>
-  </article>
+<Layout lang={lang} title={project.venue[lang]} description={project.description[lang][0]} section="works">
+  <ProjectDetail lang={lang} project={project} />
 </Layout>

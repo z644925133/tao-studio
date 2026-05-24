@@ -1,58 +1,38 @@
 ---
 import type { Lang } from '../data/i18n';
-import { projects } from '../data/projects';
-const { lang } = Astro.props as { lang: Lang };
+import { getProjectCategorySlug, projects, type WorkCategorySlug } from '../data/projects';
+const { lang, category = 'selected' } = Astro.props as { lang: Lang; category?: WorkCategorySlug };
 
-const right = [
-  { idx: 0, aspect: '3/2' },
-  { idx: 2, aspect: '3/2' },
-  { idx: 4, aspect: '4/3' }
-];
-const left = [
-  { idx: 1, aspect: '3/4' },
-  { idx: 3, aspect: '3/2' },
-  { idx: 5, aspect: '3/2' }
-];
+const visibleProjects = category === 'selected'
+  ? projects
+  : projects.filter((project) => getProjectCategorySlug(project) === category);
 
-const renderItem = (slot: { idx: number; aspect: string }) => {
-  const p = projects[slot.idx];
-  return { p, aspect: slot.aspect };
-};
+const aspectPattern = ['3/2', '3/4', '6/5', '4/3', '3/2', '5/4'];
+const slots = visibleProjects.map((project, index) => ({
+  project,
+  aspect: aspectPattern[index % aspectPattern.length],
+  column: index % 2 === 0 ? 1 : 0
+}));
+const columns = [0, 1].map((column) => slots.filter((slot) => slot.column === column));
 ---
-<div class="curated">
-  <div class="col col-left">
-    {left.map((s) => {
-      const { p, aspect } = renderItem(s);
-      return (
-        <a class="item" href={`/${lang}/works/${p.slug}`}>
-          <div class="frame" style={`aspect-ratio: ${aspect};`}>
-            <img src={`/works/${p.slug}/01.jpg`} alt={p.venue[lang]} loading="lazy" />
-          </div>
-          <div class="caption">
-            <span>{p.poeticTitle[lang]}</span>
-            <span class="sep">|</span>
-            <span>{p.venue[lang]}</span>
-          </div>
-        </a>
-      );
-    })}
-  </div>
-
-  <div class="col col-right">
-    {right.map((s) => {
-      const { p, aspect } = renderItem(s);
-      return (
-        <a class="item" href={`/${lang}/works/${p.slug}`}>
-          <div class="frame" style={`aspect-ratio: ${aspect};`}>
-            <img src={`/works/${p.slug}/01.jpg`} alt={p.venue[lang]} loading="lazy" />
-          </div>
-          <div class="caption">
-            <span>{p.poeticTitle[lang]}</span>
-            <span class="sep">|</span>
-            <span>{p.venue[lang]}</span>
-          </div>
-        </a>
-      );
-    })}
-  </div>
+<div class="curated" data-category={category}>
+  {columns.map((columnSlots, columnIndex) => (
+    <div class={`col col-${columnIndex + 1}`}>
+      {columnSlots.map((s) => {
+        const { project: p, aspect } = s;
+        return (
+          <a class="item" href={`/${lang}/works/${p.slug}`}>
+            <div class="frame" style={`aspect-ratio: ${aspect};`}>
+              <img src={`/works/${p.slug}/01.jpg`} alt={p.venue[lang]} loading="lazy" />
+            </div>
+            <div class="caption">
+              <span>{p.poeticTitle[lang]}</span>
+              <span class="sep">|</span>
+              <span>{p.venue[lang]}</span>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  ))}
 </div>

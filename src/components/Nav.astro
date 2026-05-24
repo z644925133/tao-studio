@@ -1,15 +1,24 @@
 ---
 import { t, type Lang } from '../data/i18n';
-const { lang, section = 'home' } = Astro.props as { lang: Lang; section?: 'works' | 'about' | 'contact' | 'home' };
+import { workCategories, type WorkCategorySlug } from '../data/projects';
+const { lang, section = 'home', category = 'selected' } = Astro.props as {
+  lang: Lang;
+  section?: 'works' | 'about' | 'contact' | 'home';
+  category?: WorkCategorySlug;
+};
 const tt = t[lang];
 const other = lang === 'zh' ? 'en' : 'zh';
 const otherLabel = lang === 'zh' ? 'EN' : '中';
 const currentPath = Astro.url.pathname;
 const switchPath = currentPath.replace(/^\/(zh|en)/, `/${other}`) || `/${other}/`;
+const categoryHref = (slug: WorkCategorySlug) => (
+  slug === 'selected' ? `/${lang}/works` : `/${lang}/works/category/${slug}`
+);
 
 // Hide default rules: items not matching the current section are dimmed (opacity 0)
 // until the user hovers over the entire sidebar — mirrors Neri&Hu's behaviour.
-const hideClass = (target: string) => (section === target ? '' : 'hide-default');
+const hideClass = (target: string) => (section === 'home' || section === target ? '' : 'hide-default');
+const languageClass = section === 'home' ? '' : 'hide-default';
 ---
 <div class="sidebar-fixed">
   <!-- two-line brand mark — always visible -->
@@ -30,12 +39,18 @@ const hideClass = (target: string) => (section === target ? '' : 'hide-default')
       <li class={hideClass('contact')}>
         <a href={`/${lang}/contact`} aria-current={section === 'contact' ? 'page' : undefined}>{tt.nav.contact}</a>
       </li>
-      <li class="hide-default"><a href={switchPath}>{otherLabel}</a></li>
+      <li class={languageClass}><a href={switchPath}>{otherLabel}</a></li>
     </ul>
 
     {section === 'works' && (
       <ul class="subnav-current">
-        <li><a href={`/${lang}/works`} aria-current="page">{tt.works.selected}</a></li>
+        {workCategories.map((item) => (
+          <li class={item.slug === category ? '' : 'hide-default'}>
+            <a href={categoryHref(item.slug)} aria-current={item.slug === category ? 'page' : undefined}>
+              {item.label[lang]}
+            </a>
+          </li>
+        ))}
       </ul>
     )}
   </nav>

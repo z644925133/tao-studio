@@ -4,9 +4,8 @@ import { projects } from '../data/projects';
 const { lang } = Astro.props as { lang: Lang };
 ---
 <!--
-  Restrained 16:9 slideshow, top-right aligned within main canvas,
-  with 30px margin from top and right edges. Width ~70% of canvas.
-  No caption, no counter — image speaks for itself.
+  Restrained slideshow, top-right aligned within the main canvas.
+  The proportions intentionally echo the reference site's right-weighted media field.
 -->
 <section class="home-hero">
   <div class="home-hero-frame">
@@ -40,7 +39,7 @@ const { lang } = Astro.props as { lang: Lang };
     justify-content: flex-end;
   }
   .home-hero-frame {
-    width: 70%;
+    width: 71.2%;
     aspect-ratio: 16 / 9;
     max-height: calc(100vh - 60px);
     overflow: hidden;
