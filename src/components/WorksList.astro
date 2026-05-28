@@ -13,16 +13,16 @@ const buildColumns = (groupProjects: typeof projects) => {
   return [0, 1].map((column) => slots.filter((slot) => slot.column === column));
 };
 
-const projectGroups = category === 'selected'
-  ? [
-      projects.filter((project) => getProjectCategorySlug(project) === 'selected'),
-      projects.filter((project) => getProjectCategorySlug(project) !== 'selected')
-    ]
+const selectedGroup = projects.filter((project) => getProjectCategorySlug(project) === 'selected');
+const followingGroup = projects.filter((project) => getProjectCategorySlug(project) !== 'selected');
+const visibleGroups = category === 'selected'
+  ? [selectedGroup]
   : [projects.filter((project) => getProjectCategorySlug(project) === category)];
+const shouldLoadFollowing = category === 'selected' && followingGroup.length > 0;
 
 const stripYear = (name: string) => name.replace(/^\d{4}\s+/, '');
 ---
-{projectGroups.map((groupProjects, groupIndex) => (
+{visibleGroups.map((groupProjects, groupIndex) => (
   <div class:list={['curated', groupIndex > 0 ? 'curated-following' : '']} data-category={category}>
     {buildColumns(groupProjects).map((columnSlots, columnIndex) => (
       <div class={`col col-${columnIndex + 1}`}>
@@ -43,3 +43,88 @@ const stripYear = (name: string) => name.replace(/^\d{4}\s+/, '');
     ))}
   </div>
 ))}
+
+{shouldLoadFollowing && (
+  <>
+    <div class="works-load-sentinel" data-works-load-sentinel aria-hidden="true"></div>
+    <script is:inline>
+      (() => {
+        const sentinel = document.querySelector('[data-works-load-sentinel]');
+        if (!sentinel) return;
+        const lang = document.documentElement.lang === 'en' ? 'en' : 'zh';
+
+        const createItem = (item) => {
+          const link = document.createElement('a');
+          link.className = 'item';
+          link.href = `/${lang}/works/${item.slug}`;
+
+          const frame = document.createElement('div');
+          frame.className = 'frame';
+          frame.style.aspectRatio = item.aspect;
+
+          const img = document.createElement('img');
+          img.src = item.cover;
+          img.alt = item.name;
+          img.loading = 'lazy';
+          img.decoding = 'async';
+
+          const caption = document.createElement('div');
+          caption.className = 'caption';
+
+          const name = document.createElement('span');
+          name.textContent = item.name;
+
+          frame.append(img);
+          caption.append(name);
+          link.append(frame, caption);
+          return link;
+        };
+
+        const loadFollowingWorks = async () => {
+          if (sentinel.hasAttribute('data-loaded')) return;
+          sentinel.setAttribute('data-loaded', 'true');
+
+          const response = await fetch('/api/works-following.json');
+          if (!response.ok) {
+            sentinel.removeAttribute('data-loaded');
+            return;
+          }
+
+          const data = await response.json();
+          const columns = [[], []];
+          data.items.forEach((item) => {
+            columns[item.column === 1 ? 1 : 0].push(item);
+          });
+
+          const group = document.createElement('div');
+          group.className = 'curated curated-following';
+          group.dataset.category = 'following';
+
+          columns.forEach((items, index) => {
+            const col = document.createElement('div');
+            col.className = `col col-${index + 1}`;
+            items.forEach((item) => col.append(createItem(item)));
+            group.append(col);
+          });
+
+          sentinel.parentNode?.insertBefore(group, sentinel);
+          sentinel.remove();
+        };
+
+        if ('IntersectionObserver' in window) {
+          const io = new IntersectionObserver((entries) => {
+            if (entries.some((entry) => entry.isIntersecting)) {
+              io.disconnect();
+              loadFollowingWorks().catch(() => sentinel.removeAttribute('data-loaded'));
+            }
+          }, { rootMargin: '900px 0px', threshold: 0 });
+          io.observe(sentinel);
+        } else if ('requestIdleCallback' in window) {
+          requestIdleCallback(() => loadFollowingWorks(), { timeout: 1200 });
+        } else {
+          window.setTimeout(() => loadFollowingWorks(), 300);
+        }
+      })();
+    </script>
+  </>
+)}

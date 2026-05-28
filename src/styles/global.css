@@ -296,6 +296,9 @@ p { margin: 0; padding: 0; }
   color: var(--fg);
 }
 .curated .item .caption .sep { padding: 0 2px; }
+.works-load-sentinel {
+  height: 1px;
+}
 
 /* desktop: staggered two-column */
 @media (min-width: 769px) {
