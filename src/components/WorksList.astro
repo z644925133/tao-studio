@@ -47,6 +47,16 @@ const stripYear = (name: string) => name.replace(/^\d{4}\s+/, '');
 {shouldLoadFollowing && (
   <>
     <div class="works-load-sentinel" data-works-load-sentinel aria-hidden="true"></div>
+    <noscript>
+      <div class="works-noscript">
+        <p>{lang === 'zh' ? '继续浏览其它项目，请进入各项目类型。' : 'Continue browsing through the project categories.'}</p>
+        <a href={`/${lang}/works/category/residential`}>{lang === 'zh' ? '住宅' : 'Residential'}</a>
+        <a href={`/${lang}/works/category/office`}>{lang === 'zh' ? '办公' : 'Office'}</a>
+        <a href={`/${lang}/works/category/commercial`}>{lang === 'zh' ? '商业' : 'Commercial'}</a>
+        <a href={`/${lang}/works/category/exhibition`}>{lang === 'zh' ? '展示' : 'Exhibition'}</a>
+        <a href={`/${lang}/works/category/hotel`}>{lang === 'zh' ? '酒店' : 'Hotel'}</a>
+      </div>
+    </noscript>
     <script is:inline>
       (() => {
         const sentinel = document.querySelector('[data-works-load-sentinel]');

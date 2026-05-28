@@ -1,5 +1,3 @@
-@import "tailwindcss";
-
 :root {
   --bg: #FFFDFA;
   --fg: #2b2b2b;
@@ -299,6 +297,19 @@ p { margin: 0; padding: 0; }
 .works-load-sentinel {
   height: 1px;
 }
+.works-noscript {
+  padding: 0 var(--pad-x) 60px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.works-noscript p {
+  margin-bottom: 10px;
+}
+.works-noscript a {
+  display: inline-block;
+  margin-right: 16px;
+  color: var(--fg);
+}
 
 /* desktop: staggered two-column */
 @media (min-width: 769px) {
@@ -316,4 +327,8 @@ p { margin: 0; padding: 0; }
   .curated .item img { transition: transform 1.4s ease-out; }
   .curated .item:hover img { transform: scale(1.02); }
   .curated .item .caption { margin-top: 11px; font-size: 14px; }
+  .works-noscript {
+    padding: 0 30px 90px 0;
+    font-size: 14px;
+  }
 }
