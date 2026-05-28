@@ -9,6 +9,6 @@ export function getStaticPaths() {
 const { project } = Astro.props;
 const lang = 'zh' as const;
 ---
-<Layout lang={lang} title={project.venue[lang]} description={project.description[lang][0]} section="works">
+<Layout lang={lang} title={project.name} description={project.description.zh} section="works" category={project.category}>
   <ProjectDetail lang={lang} project={project} />
 </Layout>

@@ -5,11 +5,13 @@
   "scripts": {
     "dev": "astro dev --host",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "assets:import": "node scripts/import-portfolio-assets.mjs"
   },
   "dependencies": {
     "astro": "^5.5.5",
     "@tailwindcss/vite": "^4.0.9",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4.0.9"
   }
 }

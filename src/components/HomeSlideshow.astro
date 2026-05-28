@@ -1,7 +1,8 @@
 ---
 import type { Lang } from '../data/i18n';
-import { projects } from '../data/projects';
+import { homeSlides } from '../data/projects';
 const { lang } = Astro.props as { lang: Lang };
+const stripYear = (name: string) => name.replace(/^\d{4}\s+/, '');
 ---
 <!--
   Restrained slideshow, top-right aligned within the main canvas.
@@ -10,18 +11,19 @@ const { lang } = Astro.props as { lang: Lang };
 <section class="home-hero">
   <div class="home-hero-frame">
     <div class="crossfade home-crossfade">
-      {projects.map((p, i) => (
+      {homeSlides.map(({ project, image }, i) => (
         <a
-          href={`/${lang}/works/${p.slug}`}
+          href={`/${lang}/works/${project.slug}`}
           class:list={[i === 0 ? 'active' : '']}
           data-slide={i}
-          aria-label={p.venue[lang]}
+          aria-label={stripYear(project.name)}
         >
           <img
-            src={`/works/${p.slug}/01.jpg`}
-            alt={p.venue[lang]}
+            src={image}
+            alt={stripYear(project.name)}
             loading={i === 0 ? 'eager' : 'lazy'}
             fetchpriority={i === 0 ? 'high' : 'auto'}
+            decoding="async"
           />
         </a>
       ))}
@@ -63,7 +65,7 @@ const { lang } = Astro.props as { lang: Lang };
   }
 </style>
 
-<script is:inline define:vars={{ count: projects.length }}>
+<script is:inline define:vars={{ count: homeSlides.length }}>
   const slides = document.querySelectorAll('.home-crossfade > a');
   let idx = 0;
   setInterval(() => {
@@ -71,5 +73,5 @@ const { lang } = Astro.props as { lang: Lang };
     slides[idx].classList.remove('active');
     idx = (idx + 1) % count;
     slides[idx].classList.add('active');
-  }, 5000);
+  }, 3000);
 </script>

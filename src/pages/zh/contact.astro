@@ -15,6 +15,33 @@ const tt = t[lang];
           <div>{value}</div>
         </div>
       ))}
+
+      <div class="contact-qr">
+        <div class="muted">联系我们</div>
+        <button class="qr-button" type="button" data-qr-open aria-label="放大二维码">
+          <img src="/contact-qr.png" alt="涛-设计联系我们二维码" loading="lazy" decoding="async" />
+        </button>
+      </div>
     </div>
   </section>
+
+  <dialog class="qr-dialog" data-qr-dialog aria-label="联系我们二维码">
+    <button class="qr-dialog-close" type="button" data-qr-close aria-label="关闭">×</button>
+    <img src="/contact-qr.png" alt="涛-设计联系我们二维码" />
+  </dialog>
+
+  <script is:inline>
+    (() => {
+      const openButton = document.querySelector('[data-qr-open]');
+      const closeButton = document.querySelector('[data-qr-close]');
+      const dialog = document.querySelector('[data-qr-dialog]');
+      if (!openButton || !closeButton || !dialog || typeof dialog.showModal !== 'function') return;
+
+      openButton.addEventListener('click', () => dialog.showModal());
+      closeButton.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+    })();
+  </script>
 </Layout>

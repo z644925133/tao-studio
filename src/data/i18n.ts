@@ -1,6 +1,6 @@
 export const t = {
   zh: {
-    nav: { works: '作品', about: '工作室', contact: '联络' },
+    nav: { works: '作品', about: '工作室', contact: '联系我们' },
     site: {
       name: '涛-设计',
       brandZh: '涛-设计',
@@ -38,7 +38,7 @@ export const t = {
       ]
     },
     contact: {
-      title: '联络',
+      title: '联系我们',
       lines: [
         ['工作室', '中国 重庆 渝中区'],
         ['项目合作', '644925133@qq.com'],

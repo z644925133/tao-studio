@@ -3,36 +3,43 @@ import type { Lang } from '../data/i18n';
 import { getProjectCategorySlug, projects, type WorkCategorySlug } from '../data/projects';
 const { lang, category = 'selected' } = Astro.props as { lang: Lang; category?: WorkCategorySlug };
 
-const visibleProjects = category === 'selected'
-  ? projects
-  : projects.filter((project) => getProjectCategorySlug(project) === category);
-
 const aspectPattern = ['3/2', '3/4', '6/5', '4/3', '3/2', '5/4'];
-const slots = visibleProjects.map((project, index) => ({
-  project,
-  aspect: aspectPattern[index % aspectPattern.length],
-  column: index % 2 === 0 ? 1 : 0
-}));
-const columns = [0, 1].map((column) => slots.filter((slot) => slot.column === column));
+const buildColumns = (groupProjects: typeof projects) => {
+  const slots = groupProjects.map((project, index) => ({
+    project,
+    aspect: aspectPattern[index % aspectPattern.length],
+    column: index % 2 === 0 ? 1 : 0
+  }));
+  return [0, 1].map((column) => slots.filter((slot) => slot.column === column));
+};
+
+const projectGroups = category === 'selected'
+  ? [
+      projects.filter((project) => getProjectCategorySlug(project) === 'selected'),
+      projects.filter((project) => getProjectCategorySlug(project) !== 'selected')
+    ]
+  : [projects.filter((project) => getProjectCategorySlug(project) === category)];
+
+const stripYear = (name: string) => name.replace(/^\d{4}\s+/, '');
 ---
-<div class="curated" data-category={category}>
-  {columns.map((columnSlots, columnIndex) => (
-    <div class={`col col-${columnIndex + 1}`}>
-      {columnSlots.map((s) => {
-        const { project: p, aspect } = s;
-        return (
-          <a class="item" href={`/${lang}/works/${p.slug}`}>
-            <div class="frame" style={`aspect-ratio: ${aspect};`}>
-              <img src={`/works/${p.slug}/01.jpg`} alt={p.venue[lang]} loading="lazy" />
-            </div>
-            <div class="caption">
-              <span>{p.poeticTitle[lang]}</span>
-              <span class="sep">|</span>
-              <span>{p.venue[lang]}</span>
-            </div>
-          </a>
-        );
-      })}
-    </div>
-  ))}
-</div>
+{projectGroups.map((groupProjects, groupIndex) => (
+  <div class:list={['curated', groupIndex > 0 ? 'curated-following' : '']} data-category={category}>
+    {buildColumns(groupProjects).map((columnSlots, columnIndex) => (
+      <div class={`col col-${columnIndex + 1}`}>
+        {columnSlots.map((s) => {
+          const { project: p, aspect } = s;
+          return (
+            <a class="item" href={`/${lang}/works/${p.slug}`}>
+              <div class="frame" style={`aspect-ratio: ${aspect};`}>
+                <img src={p.cover} alt={stripYear(p.name)} loading="lazy" decoding="async" />
+              </div>
+              <div class="caption">
+                <span>{stripYear(p.name)}</span>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    ))}
+  </div>
+))}

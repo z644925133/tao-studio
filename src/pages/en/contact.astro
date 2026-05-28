@@ -15,6 +15,33 @@ const tt = t[lang];
           <div>{value}</div>
         </div>
       ))}
+
+      <div class="contact-qr">
+        <div class="muted">Contact Us</div>
+        <button class="qr-button" type="button" data-qr-open aria-label="Enlarge QR code">
+          <img src="/contact-qr.png" alt="Tao-design contact QR code" loading="lazy" decoding="async" />
+        </button>
+      </div>
     </div>
   </section>
+
+  <dialog class="qr-dialog" data-qr-dialog aria-label="Contact QR code">
+    <button class="qr-dialog-close" type="button" data-qr-close aria-label="Close">×</button>
+    <img src="/contact-qr.png" alt="Tao-design contact QR code" />
+  </dialog>
+
+  <script is:inline>
+    (() => {
+      const openButton = document.querySelector('[data-qr-open]');
+      const closeButton = document.querySelector('[data-qr-close]');
+      const dialog = document.querySelector('[data-qr-dialog]');
+      if (!openButton || !closeButton || !dialog || typeof dialog.showModal !== 'function') return;
+
+      openButton.addEventListener('click', () => dialog.showModal());
+      closeButton.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+    })();
+  </script>
 </Layout>
