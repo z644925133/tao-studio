@@ -1,3 +1,4 @@
+import { imageSrcSet, imageUrl } from '../../data/image-cdn';
 import { getProjectCategorySlug, projects } from '../../data/projects';
 
 export const prerender = true;
@@ -11,7 +12,8 @@ export function GET() {
     .map((project, index) => ({
       slug: project.slug,
       name: stripYear(project.name),
-      cover: project.cover,
+      cover: imageUrl(project.cover, { w: 720, q: 66, fit: 'cover' }),
+      srcset: imageSrcSet(project.cover, [420, 640, 720, 900], { q: 66, fit: 'cover' }),
       aspect: aspectPattern[index % aspectPattern.length],
       column: index % 2 === 0 ? 1 : 0
     }));

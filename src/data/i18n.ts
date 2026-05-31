@@ -32,19 +32,19 @@ export const t = {
       credits: [
         '主理设计师 黄涛 · 现任 Tao-design 主案设计师',
         '本科毕业于 四川农业大学',
-        '履历 曾任 马建国际建筑设计顾问有限公司-主任设计师 2018-2022',
-        '         重庆银桥工程设计（集团）有限公司-方案设计师 2016-2018',
-        '工作室 中国 重庆 渝北 金山意库3号楼3层'
+        '履历 曾任 马建国际建筑设计顾问有限公司-主任设计师 ',
+        '         重庆银桥工程设计（集团）有限公司-方案设计师 ',
+        '工作室 中国 重庆 渝北 金山意库3号楼'
       ]
     },
     contact: {
       title: '联系我们',
       lines: [
-        ['工作室', '中国 重庆 渝中区'],
+        ['工作室', '中国 重庆 渝北 金山意库3号楼'],
         ['项目合作', '644925133@qq.com'],
         ['电话', '177 2625 8047'],
         ['微信', '同手机号'],
-        ['关注', 'WeChat · Xiaohongshu(待补充)']
+        ['关注', 'WeChat · Xiaohongshu']
       ]
     },
     footer: {
@@ -77,12 +77,12 @@ export const t = {
     about: {
       title: 'Studio',
       paragraphs: [
-        'Tao-design is an interior design studio based in Chongqing, China, led by designer Tao Huang. Since 2016, the studio has practiced in public and commercial spaces — hospitality, offices, healthcare, real estate and retail.',
-        'We believe the spaces that move us are never the product of decoration, but are slowly drawn out of the relationships between structure, circulation, light and material. Across the constant shifting between project types, the studio has arrived at a method that favours restraint, executable detail and the legible relationship of materials.',
-        'Methodically, we move from concept sketch directly into construction detail, following each project personally onto site rather than allowing the design to be diluted across the standard concept–development–construction relay. This continuous involvement is, for us, the only honest commitment to a project actually being built.'
+        'Tao-design is an interior design studio based in Chongqing, China, led by designer Tao Huang. Since 2016, the studio has continued to work across public interior practices, with projects spanning hospitality, workplace, healthcare, real estate and commercial spaces.',
+        'We believe that a truly moving space is never produced by decoration alone. It is gradually shaped through the relationships between structure, circulation, light and material. Moving repeatedly between different project types, the studio has developed a restrained working method that values buildability and the precise dialogue of materials.',
+        'In our workflow, concept sketches are carried directly into construction details. We stay closely involved in site development and detail control, rather than allowing the design to be diluted through the conventional relay from concept to development to construction. This full-process involvement is our commitment to the realisation of design.'
       ],
       credits: [
-        'Founder · Tao Huang, Lead Designer at Tao-design',
+        'Principal Designer · Tao Huang, Lead Designer at Tao-design',
         'B.A., Sichuan Agricultural University',
         'Experience — Lead Designer, Ma Jian International Architectural Design Consulting (2018–2022)',
         '                       Scheme Designer, Chongqing Yinqiao Engineering Design Group (2016–2018)',
@@ -92,7 +92,7 @@ export const t = {
     contact: {
       title: 'Contact',
       lines: [
-        ['Studio', 'Yuzhong District, Chongqing, China'],
+        ['Studio', 'Building 3, Jinshan Yiku, Yubei District, Chongqing, China'],
         ['Project enquiries', '644925133@qq.com'],
         ['Phone', '+86 177 2625 8047'],
         ['WeChat', 'Same as mobile'],

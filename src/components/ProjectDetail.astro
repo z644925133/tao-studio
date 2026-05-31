@@ -1,5 +1,6 @@
 ---
 import type { Lang } from '../data/i18n';
+import { imageSrcSet, imageUrl } from '../data/image-cdn';
 import { projects, type Project } from '../data/projects';
 
 type Props = { lang: Lang; project: Project };
@@ -30,7 +31,9 @@ const displayName = stripYear(project.name);
       {project.images.map((src, index) => (
         <figure class:list={['project-media', index === 0 ? 'project-media-lead' : '']}>
           <img
-            src={src}
+            src={imageUrl(src, { w: 1600, q: 70 })}
+            srcset={imageSrcSet(src, [720, 1080, 1400, 1600], { q: 70 })}
+            sizes="(min-width: 769px) 68vw, 100vw"
             alt={`${displayName} ${String(index + 1).padStart(2, '0')}`}
             loading={index === 0 ? 'eager' : 'lazy'}
             fetchpriority={index === 0 ? 'high' : 'auto'}
@@ -45,7 +48,14 @@ const displayName = stripYear(project.name);
         <h2 class="project-heading muted">{sectionLabels.plans}</h2>
         {project.plans.map((src, index) => (
           <figure class="project-media project-plan">
-            <img src={src} alt={`${displayName} plan ${index + 1}`} loading="lazy" decoding="async" />
+            <img
+              src={imageUrl(src, { w: 1400, q: 76 })}
+              srcset={imageSrcSet(src, [720, 1080, 1400], { q: 76 })}
+              sizes="(min-width: 769px) 68vw, 100vw"
+              alt={`${displayName} plan ${index + 1}`}
+              loading="lazy"
+              decoding="async"
+            />
           </figure>
         ))}
       </section>
@@ -75,7 +85,14 @@ const displayName = stripYear(project.name);
         {relatedProjects.map((p) => (
           <a href={`/${lang}/works/${p.slug}`}>
             <div class="related-frame">
-              <img src={p.cover} alt={stripYear(p.name)} loading="lazy" decoding="async" />
+              <img
+                src={imageUrl(p.cover, { w: 640, q: 66, fit: 'cover' })}
+                srcset={imageSrcSet(p.cover, [360, 520, 640, 800], { q: 66, fit: 'cover' })}
+                sizes="(min-width: 769px) 22vw, 50vw"
+                alt={stripYear(p.name)}
+                loading="lazy"
+                decoding="async"
+              />
             </div>
             <div>
               <span>{stripYear(p.name)}</span>
@@ -172,6 +189,65 @@ const displayName = stripYear(project.name);
     margin-top: 32px;
     font-size: 12px;
     letter-spacing: 0.1em;
+  }
+
+  @media (max-width: 768px) {
+    .project-stage {
+      padding: 12px var(--pad-x) 68px;
+    }
+    .project-section + .project-section {
+      margin-top: 48px;
+    }
+    .project-media {
+      margin-bottom: 10px;
+    }
+    .project-media img {
+      min-height: 1px;
+    }
+    .project-plan {
+      padding: 10px;
+      border: 1px solid var(--line);
+    }
+    .project-heading {
+      margin-bottom: 12px;
+      font-size: 10px;
+    }
+    .project-meta {
+      display: block;
+      margin-bottom: 18px;
+      padding-bottom: 13px;
+    }
+    .project-title-main {
+      display: block;
+      font-size: 15px;
+      line-height: 1.45;
+      letter-spacing: 0.04em;
+    }
+    .project-year-tag {
+      display: block;
+      margin-top: 5px;
+      font-size: 10px;
+    }
+    .desc-zh {
+      margin-bottom: 18px;
+    }
+    .desc-zh p,
+    .desc-en p {
+      font-size: 13px;
+      line-height: 1.85;
+      letter-spacing: 0.02em;
+    }
+    .related-grid {
+      gap: 14px 12px;
+    }
+    .related-grid a {
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .project-back {
+      margin-top: 30px;
+      padding: 8px 0;
+    }
   }
 
   /* ── desktop enhancements ── */

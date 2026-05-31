@@ -1,8 +1,13 @@
 ---
 import type { Lang } from '../data/i18n';
-import { homeSlides } from '../data/projects';
+import { imageSrcSet, imageUrl } from '../data/image-cdn';
+import { getProjectCategorySlug, homeSlides, projects } from '../data/projects';
 const { lang } = Astro.props as { lang: Lang };
 const stripYear = (name: string) => name.replace(/^\d{4}\s+/, '');
+const mobileProjects = [
+  ...projects.filter((project) => getProjectCategorySlug(project) === 'selected'),
+  ...projects.filter((project) => getProjectCategorySlug(project) !== 'selected')
+];
 ---
 <!--
   Restrained slideshow, top-right aligned within the main canvas.
@@ -19,12 +24,31 @@ const stripYear = (name: string) => name.replace(/^\d{4}\s+/, '');
           aria-label={stripYear(project.name)}
         >
           <img
-            src={image}
+            data-src={imageUrl(image, { w: 1400, q: 68, fit: 'cover' })}
+            data-srcset={imageSrcSet(image, [900, 1200, 1400], { q: 68, fit: 'cover' })}
+            data-sizes="(min-width: 769px) 72vw, 1px"
             alt={stripYear(project.name)}
-            loading={i === 0 ? 'eager' : 'lazy'}
-            fetchpriority={i === 0 ? 'high' : 'auto'}
+            loading="lazy"
+            fetchpriority="auto"
             decoding="async"
           />
+          <span class="home-slide-title">{stripYear(project.name)}</span>
+        </a>
+      ))}
+    </div>
+    <div class="home-mobile-stream" aria-label={lang === 'zh' ? '作品' : 'Works'}>
+      {mobileProjects.map((project, index) => (
+        <a href={`/${lang}/works/${project.slug}`} aria-label={stripYear(project.name)}>
+          <img
+            data-src={imageUrl(project.cover, { w: 720, q: 66, fit: 'cover' })}
+            data-srcset={imageSrcSet(project.cover, [480, 640, 720, 900], { q: 66, fit: 'cover' })}
+            data-sizes="100vw"
+            alt={stripYear(project.name)}
+            loading={index === 0 ? 'eager' : 'lazy'}
+            fetchpriority={index === 0 ? 'high' : 'auto'}
+            decoding="async"
+          />
+          <span>{stripYear(project.name)}</span>
         </a>
       ))}
     </div>
@@ -52,26 +76,117 @@ const stripYear = (name: string) => name.replace(/^\d{4}\s+/, '');
     width: 100%;
     height: 100%;
   }
+  .home-slide-title {
+    display: none;
+  }
+  .home-mobile-stream {
+    display: none;
+  }
   @media (max-width: 768px) {
     .home-hero {
+      min-height: 0;
       height: auto;
-      padding: 15px;
+      padding: 14px var(--pad-x) 54px;
+      align-items: flex-start;
+      justify-content: center;
     }
     .home-hero-frame {
       width: 100%;
-      aspect-ratio: 16 / 9;
+      height: auto;
+      aspect-ratio: auto;
       max-height: none;
+      overflow: visible;
+      background: transparent;
+    }
+    .home-crossfade {
+      display: block;
+      height: 0;
+      overflow: hidden;
+      visibility: hidden;
+    }
+    .home-mobile-stream {
+      display: block;
+    }
+    .home-mobile-stream a {
+      display: block;
+      margin-bottom: 34px;
+    }
+    .home-mobile-stream a:last-child {
+      margin-bottom: 0;
+    }
+    .home-mobile-stream img {
+      width: 100%;
+      height: min(72svh, 620px);
+      min-height: 430px;
+      object-fit: cover;
+      background: #f5f5f5;
+    }
+    .home-mobile-stream span {
+      display: block;
+      margin-top: 8px;
+      font-size: 12px;
+      line-height: 1.45;
+      letter-spacing: 0.02em;
+      color: var(--fg);
     }
   }
 </style>
 
 <script is:inline define:vars={{ count: homeSlides.length }}>
   const slides = document.querySelectorAll('.home-crossfade > a');
+  const desktopImages = document.querySelectorAll('.home-crossfade img[data-src]');
+  const mobileImages = document.querySelectorAll('.home-mobile-stream img[data-src]');
+  const desktopMq = window.matchMedia('(min-width: 769px)');
+  const mobileMq = window.matchMedia('(max-width: 768px)');
+  const loadImage = (img) => {
+    if (!img || img.dataset.loaded === 'true') return;
+    const srcset = img.getAttribute('data-srcset');
+    const sizes = img.getAttribute('data-sizes');
+    const src = img.getAttribute('data-src');
+    if (srcset) img.setAttribute('srcset', srcset);
+    if (sizes) img.setAttribute('sizes', sizes);
+    if (src) img.setAttribute('src', src);
+    img.dataset.loaded = 'true';
+  };
+  const loadDesktopSlide = (index) => {
+    if (!desktopMq.matches) return;
+    loadImage(desktopImages[index]);
+  };
+  const enableInitialDesktopSlides = () => {
+    loadDesktopSlide(0);
+    loadDesktopSlide(1 % count);
+  };
+  const enableMobileStream = () => {
+    if (!mobileMq.matches || !mobileImages.length) return;
+    loadImage(mobileImages[0]);
+    if ('IntersectionObserver' in window) {
+      const mobileIo = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            loadImage(entry.target);
+            mobileIo.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '700px 0px', threshold: 0.01 });
+      mobileImages.forEach((img) => {
+        if (img.dataset.loaded !== 'true') mobileIo.observe(img);
+      });
+    } else {
+      mobileImages.forEach(loadImage);
+    }
+  };
+  enableInitialDesktopSlides();
+  enableMobileStream();
+  desktopMq.addEventListener?.('change', enableInitialDesktopSlides);
+  mobileMq.addEventListener?.('change', enableMobileStream);
   let idx = 0;
   setInterval(() => {
     if (!slides.length) return;
+    const nextIdx = (idx + 1) % count;
+    loadDesktopSlide(nextIdx);
+    loadDesktopSlide((nextIdx + 1) % count);
     slides[idx].classList.remove('active');
-    idx = (idx + 1) % count;
+    idx = nextIdx;
     slides[idx].classList.add('active');
   }, 3000);
 </script>

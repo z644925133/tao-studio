@@ -1,11 +1,23 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { imageSrcSet, imageUrl } from '../../data/image-cdn';
 import { t } from '../../data/i18n';
 const lang = 'en' as const;
 const tt = t[lang];
+const studioImage = '/studio-office.webp';
 ---
 <Layout lang={lang} title={tt.about.title} section="about">
   <section style="padding: 30px; max-width: 760px;">
+    <img
+      src={imageUrl(studioImage, { w: 760, q: 72 })}
+      srcset={imageSrcSet(studioImage, [480, 640, 760, 1000], { q: 72 })}
+      sizes="(min-width: 769px) 760px, calc(100vw - 28px)"
+      alt="Tao-design Studio"
+      loading="eager"
+      decoding="async"
+      style="display: block; width: 100%; height: auto; margin-bottom: 30px;"
+      class="fade-in"
+    />
     <div style="margin-bottom: 30px;" class="fade-in">{tt.about.title}</div>
 
     <div class="reveal">

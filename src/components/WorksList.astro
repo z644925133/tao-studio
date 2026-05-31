@@ -1,5 +1,6 @@
 ---
 import type { Lang } from '../data/i18n';
+import { imageSrcSet, imageUrl } from '../data/image-cdn';
 import { getProjectCategorySlug, projects, type WorkCategorySlug } from '../data/projects';
 const { lang, category = 'selected' } = Astro.props as { lang: Lang; category?: WorkCategorySlug };
 
@@ -31,7 +32,14 @@ const stripYear = (name: string) => name.replace(/^\d{4}\s+/, '');
           return (
             <a class="item" href={`/${lang}/works/${p.slug}`}>
               <div class="frame" style={`aspect-ratio: ${aspect};`}>
-                <img src={p.cover} alt={stripYear(p.name)} loading="lazy" decoding="async" />
+                <img
+                  src={imageUrl(p.cover, { w: 720, q: 66, fit: 'cover' })}
+                  srcset={imageSrcSet(p.cover, [420, 640, 720, 900], { q: 66, fit: 'cover' })}
+                  sizes="(min-width: 769px) 38vw, 100vw"
+                  alt={stripYear(p.name)}
+                  loading="lazy"
+                  decoding="async"
+                />
               </div>
               <div class="caption">
                 <span>{stripYear(p.name)}</span>
@@ -74,6 +82,8 @@ const stripYear = (name: string) => name.replace(/^\d{4}\s+/, '');
 
           const img = document.createElement('img');
           img.src = item.cover;
+          if (item.srcset) img.srcset = item.srcset;
+          img.sizes = '(min-width: 769px) 38vw, 100vw';
           img.alt = item.name;
           img.loading = 'lazy';
           img.decoding = 'async';
@@ -121,18 +131,36 @@ const stripYear = (name: string) => name.replace(/^\d{4}\s+/, '');
           sentinel.remove();
         };
 
+        const hasScrolledIntoFollowing = () => window.scrollY > Math.min(360, window.innerHeight * 0.45);
+        let userScrolled = hasScrolledIntoFollowing();
+
+        const loadAfterScroll = () => {
+          if (userScrolled) return;
+          userScrolled = hasScrolledIntoFollowing();
+          if (!userScrolled) return;
+          loadFollowingWorks().catch(() => sentinel.removeAttribute('data-loaded'));
+        };
+
         if ('IntersectionObserver' in window) {
           const io = new IntersectionObserver((entries) => {
-            if (entries.some((entry) => entry.isIntersecting)) {
+            if (userScrolled && entries.some((entry) => entry.isIntersecting)) {
               io.disconnect();
               loadFollowingWorks().catch(() => sentinel.removeAttribute('data-loaded'));
             }
-          }, { rootMargin: '900px 0px', threshold: 0 });
+          }, { rootMargin: '240px 0px', threshold: 0 });
           io.observe(sentinel);
+
+          window.addEventListener('scroll', () => {
+            userScrolled = hasScrolledIntoFollowing();
+            if (userScrolled && sentinel.getBoundingClientRect().top < window.innerHeight + 240) {
+              io.disconnect();
+              loadFollowingWorks().catch(() => sentinel.removeAttribute('data-loaded'));
+            }
+          }, { passive: true, once: false });
         } else if ('requestIdleCallback' in window) {
-          requestIdleCallback(() => loadFollowingWorks(), { timeout: 1200 });
+          window.addEventListener('scroll', () => requestIdleCallback(loadAfterScroll, { timeout: 1200 }), { passive: true });
         } else {
-          window.setTimeout(() => loadFollowingWorks(), 300);
+          window.addEventListener('scroll', () => window.setTimeout(loadAfterScroll, 300), { passive: true });
         }
       })();
     </script>
