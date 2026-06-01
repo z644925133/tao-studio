@@ -14,6 +14,7 @@ const switchPath = currentPath.replace(/^\/(zh|en)/, `/${other}`) || `/${other}/
 const categoryHref = (slug: WorkCategorySlug) => (
   slug === 'selected' ? `/${lang}/works` : `/${lang}/works/category/${slug}`
 );
+const drawerCategoryLabel = lang === 'zh' ? '作品分类' : 'Work Categories';
 
 // Hide default rules: items not matching the current section are dimmed (opacity 0)
 // until the user hovers over the entire sidebar — mirrors Neri&Hu's behaviour.
@@ -63,7 +64,17 @@ const languageClass = section === 'home' ? '' : 'hide-default';
 <!-- mobile drawer overlay -->
 <div id="mobile-drawer" class="mobile-drawer" aria-hidden="true">
   <nav class="drawer-nav">
-    <a href={`/${lang}/works`}>{tt.nav.works}</a>
+    <div class="drawer-work-group">
+      <a href={`/${lang}/works`} class="drawer-primary-link">{tt.nav.works}</a>
+      <div class="drawer-category-label">{drawerCategoryLabel}</div>
+      <div class="drawer-category-list">
+        {workCategories.map((item) => (
+          <a href={categoryHref(item.slug)} aria-current={section === 'works' && item.slug === category ? 'page' : undefined}>
+            {item.label[lang]}
+          </a>
+        ))}
+      </div>
+    </div>
     <a href={`/${lang}/about`}>{tt.nav.about}</a>
     <a href={`/${lang}/contact`}>{tt.nav.contact}</a>
     <a href={switchPath} class="lang-switch">{otherLabel}</a>
@@ -126,6 +137,38 @@ const languageClass = section === 'home' ? '' : 'hide-default';
     letter-spacing: 0.06em;
     padding: 17px 0;
     border-bottom: 1px solid var(--line);
+    color: var(--fg);
+  }
+  .drawer-work-group {
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .drawer-work-group .drawer-primary-link {
+    border-bottom: none;
+    padding-bottom: 10px;
+  }
+  .drawer-category-label {
+    margin: 0 0 11px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 0.14em;
+  }
+  .drawer-category-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 14px;
+  }
+  .drawer-category-list a {
+    min-height: 34px;
+    padding: 7px 0;
+    border-bottom: none;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 20px;
+    letter-spacing: 0.04em;
+  }
+  .drawer-category-list a[aria-current="page"] {
     color: var(--fg);
   }
   .drawer-nav .lang-switch {
